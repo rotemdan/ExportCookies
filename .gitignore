@@ -1,0 +1,4 @@
+dist
+web-ext-artifacts
+manifest-*.json
+*.cmd
