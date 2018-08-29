@@ -28,12 +28,17 @@ async function main() {
 
 			if (currentTabDomainMatch) {
 				const currentTabDomain = currentTabDomainMatch[0]
-				$('#save-for-current-domain-button').html(currentTabDomain)
 
-				$('#save-for-current-domain-button').on('click', async () => {
-					const cookies = await browser.cookies.getAll({ domain: currentTabDomain })
-					saveCookiesToTextFile(cookies, `cookies-${currentTabDomain.replace(/\./g, '-')}.txt`, shouldEncodeHttpOnly())
-				})
+				if (currentTabDomain === currentTabHostname) {
+					$('#save-for-current-domain-button').css('display', 'none')
+				} else {
+					$('#save-for-current-domain-button').html(currentTabDomain)
+
+					$('#save-for-current-domain-button').on('click', async () => {
+						const cookies = await browser.cookies.getAll({ domain: currentTabDomain })
+						saveCookiesToTextFile(cookies, `cookies-${currentTabDomain.replace(/\./g, '-')}.txt`, shouldEncodeHttpOnly())
+					})
+				}
 			} else {
 				$('#save-for-current-domain-button').prop('disabled', true)
 			}
