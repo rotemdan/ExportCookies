@@ -24,23 +24,18 @@ async function main() {
 				saveCookiesToTextFile(cookies, `cookies-${currentTabHostname.replace(/\./g, '-')}.txt`, shouldEncodeHttpOnly())
 			})
 
-			const currentTabDomainMatch = currentTabHostname.match(/[a-zA-Z0-9\-]+\.(com?\.)?[a-zA-Z0-9]+$/)
+			const parsedDomain = psl.parse(currentTabHostname)
+			
+			if (parsedDomain && parsedDomain.subdomain) {
+				const currentTabDomain = parsedDomain.domain
+				$('#save-for-current-domain-button').html(currentTabDomain)
 
-			if (currentTabDomainMatch) {
-				const currentTabDomain = currentTabDomainMatch[0]
-
-				if (currentTabDomain === currentTabHostname) {
-					$('#save-for-current-domain-button').css('display', 'none')
-				} else {
-					$('#save-for-current-domain-button').html(currentTabDomain)
-
-					$('#save-for-current-domain-button').on('click', async () => {
-						const cookies = await browser.cookies.getAll({ domain: currentTabDomain })
-						saveCookiesToTextFile(cookies, `cookies-${currentTabDomain.replace(/\./g, '-')}.txt`, shouldEncodeHttpOnly())
-					})
-				}
+				$('#save-for-current-domain-button').on('click', async () => {
+					const cookies = await browser.cookies.getAll({ domain: currentTabDomain })
+					saveCookiesToTextFile(cookies, `cookies-${currentTabDomain.replace(/\./g, '-')}.txt`, shouldEncodeHttpOnly())
+				})
 			} else {
-				$('#save-for-current-domain-button').prop('disabled', true)
+				$('#save-for-current-domain-button').css('display', 'none')
 			}
 		} else {
 			$('#save-for-current-hostname-button').prop('disabled', true)
