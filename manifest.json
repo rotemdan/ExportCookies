@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "Export Cookies",
-	"version": "0.2.3",
+	"version": "0.2.4",
 	"description": "Export cookies to a Netscape format cookies.txt file.",
 	"icons": {
 		"48": "icons/icon-48.png",

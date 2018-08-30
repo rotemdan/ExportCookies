@@ -25,7 +25,7 @@ async function main() {
 			})
 
 			const parsedDomain = psl.parse(currentTabHostname)
-			
+
 			if (parsedDomain && parsedDomain.subdomain) {
 				const currentTabDomain = parsedDomain.domain
 				$('#save-for-current-domain-button').html(currentTabDomain)
@@ -38,12 +38,12 @@ async function main() {
 				$('#save-for-current-domain-button').css('display', 'none')
 			}
 		} else {
-			$('#save-for-current-hostname-button').prop('disabled', true)
-			$('#save-for-current-domain-button').prop('disabled', true)
+			$('#save-for-current-hostname-button').css('display', 'none')
+			$('#save-for-current-domain-button').css('display', 'none')
 		}
 	} else {
-		$('#save-for-current-hostname-button').prop('disabled', true)
-		$('#save-for-current-domain-button').prop('disabled', true)
+		$('#save-for-current-hostname-button').css('display', 'none')
+		$('#save-for-current-domain-button').css('display', 'none')
 	}
 
 
