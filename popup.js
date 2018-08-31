@@ -1,8 +1,8 @@
 main()
 
 async function main() {
-	const { encodeHttpOnly } = await extensionStorage.get('encodeHttpOnly')
-	$('#encode-httponly-checkbox').prop('checked', encodeHttpOnly || false)
+	const { prefixHttpOnly } = await extensionStorage.get('prefixHttpOnly')
+	$('#prefix-httponly-checkbox').prop('checked', prefixHttpOnly || false)
 
 	const queryResult = await browser.tabs.query({
 		currentWindow: true,
@@ -21,10 +21,10 @@ async function main() {
 
 			$('#save-for-current-hostname-button').on('click', async () => {
 				const cookies = await browser.cookies.getAll({ domain: currentTabHostname })
-				saveCookiesToTextFile(cookies, `cookies-${currentTabHostname.replace(/\./g, '-')}.txt`, shouldEncodeHttpOnly())
+				await saveCookiesToTextFile(cookies, `cookies-${currentTabHostname.replace(/\./g, '-')}.txt`, shouldPrefixHttpOnly())
 			})
 
-			const parsedDomain = psl.parse(currentTabHostname)
+			const parsedDomain = await browser.runtime.sendMessage({ type: 'parseDomain', data: currentTabHostname })
 
 			if (parsedDomain && parsedDomain.subdomain) {
 				const currentTabDomain = parsedDomain.domain
@@ -32,7 +32,7 @@ async function main() {
 
 				$('#save-for-current-domain-button').on('click', async () => {
 					const cookies = await browser.cookies.getAll({ domain: currentTabDomain })
-					saveCookiesToTextFile(cookies, `cookies-${currentTabDomain.replace(/\./g, '-')}.txt`, shouldEncodeHttpOnly())
+					await saveCookiesToTextFile(cookies, `cookies-${currentTabDomain.replace(/\./g, '-')}.txt`, shouldPrefixHttpOnly())
 				})
 			} else {
 				$('#save-for-current-domain-button').css('display', 'none')
@@ -49,36 +49,27 @@ async function main() {
 
 	$('#save-for-all-domains-button').on('click', async () => {
 		const allCookies = await browser.cookies.getAll({})
-		saveCookiesToTextFile(allCookies, `cookies.txt`, shouldEncodeHttpOnly())
+		await saveCookiesToTextFile(allCookies, `cookies.txt`, shouldPrefixHttpOnly())
 	})
 
-	$('#encode-httponly-checkbox').on('change input', async () => {
-		await extensionStorage.set({ encodeHttpOnly: shouldEncodeHttpOnly()})
+	$('#prefix-httponly-checkbox').on('change input', async () => {
+		await extensionStorage.set({ prefixHttpOnly: shouldPrefixHttpOnly()})
 	})
 
-	function shouldEncodeHttpOnly() {
-		return $('#encode-httponly-checkbox').prop('checked')
+	function shouldPrefixHttpOnly() {
+		return $('#prefix-httponly-checkbox').prop('checked')
 	}
 }
 
-async function saveCookiesToTextFile(cookieDescriptors, defaultFileName, encodeHttpOnly) {
-	const formattedCookies = cookieDescriptors.map((c) => formatCookie(c, encodeHttpOnly))
-
+async function saveCookiesToTextFile(cookieDescriptors, filename, prefixHttpOnly) {
+	const formattedCookies = cookieDescriptors.map((c) => formatCookie(c, prefixHttpOnly))
 	const fileContent = `# Netscape HTTP Cookie File\n\n${formattedCookies.join('\n')}\n`
-	const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' })
-	const objectURL = URL.createObjectURL(blob)
-
-	await browser.downloads.download({
-		url: objectURL,
-		filename: defaultFileName || 'cookies.txt',
-		saveAs: true,
-		conflictAction: 'overwrite'
-	})
+	await browser.runtime.sendMessage({ type: 'saveFile', data: { filename: filename, content: fileContent } })
 }
 
-function formatCookie(c, encodeHttpOnly) {
+function formatCookie(c, prefixHttpOnly) {
 	return [
-		`${encodeHttpOnly && c.httpOnly ? '#HttpOnly_' : ''}${(!c.hostOnly && c.domain && !c.domain.startsWith('.')) ? '.' : ''}${c.domain}`,
+		`${prefixHttpOnly && c.httpOnly ? '#HttpOnly_' : ''}${(!c.hostOnly && c.domain && !c.domain.startsWith('.')) ? '.' : ''}${c.domain}`,
 		c.hostOnly ? 'FALSE' : 'TRUE',
 		c.path,
 		c.secure ? 'TRUE' : 'FALSE',

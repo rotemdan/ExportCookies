@@ -1,14 +1,22 @@
 {
 	"manifest_version": 2,
 	"name": "Export Cookies",
-	"version": "0.2.5",
-	"description": "Export cookies to a Netscape format cookies.txt file.",
+	"version": "0.3.0",
+	"description": "Exports cookies to a Netscape format cookies.txt file.",
 	"icons": {
 		"48": "icons/icon-48.png",
 		"96": "icons/icon-96.png"
 	},
 	"author": "Rotem Dan",
 	"homepage_url": "https://github.com/rotemdan/ExportCookies",
+	"background": {
+		"scripts": [
+			"browser-polyfill.js",
+			"libs/psl.js",
+			"common.js",
+			"background.js"
+		]
+	},
 	"browser_action": {
 		"default_popup": "popup.html",
 		"default_title": "Export cookies",

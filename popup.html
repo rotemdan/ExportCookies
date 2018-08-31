@@ -7,63 +7,10 @@
 
 	<link rel="stylesheet" type="text/css" href="styles/bootstrap-reboot.css">
 	<link rel="stylesheet" type="text/css" href="styles/gh-buttons.css">
-
-	<style>
-		body {
-			display: flex;
-			flex-direction: column;
-			align-items: stretch;
-			padding: 0.70em;
-			min-width: 15em;
-		}
-
-		body,
-		button,
-		.button {
-			font-size: 14px;
-		}
-
-		#save-button-group {
-			display: flex;
-			flex-direction: column;
-			align-items: stretch;
-			margin-bottom: 0.75em;
-			min-width: 13em;
-		}
-
-		#topLabel,
-		#options {
-			text-align: center;
-			margin-bottom: 0.75em;
-		}
-
-		#httponly-note {
-			margin: 0;
-			font-size: 0.75em;
-		}
-
-		.button {
-			margin-left: 0 !important;
-			margin-bottom: 0.15em;
-		}
-
-		#options,
-		label[for="encode-httponly-checkbox"] {
-			margin-bottom: 0;
-		}
-
-		:focus {
-			outline: none !important;
-		}
-
-		::-moz-focus-inner {
-			border: 0 !important;
-		}
-	</style>
+	<link rel="stylesheet" type="text/css" href="styles/popup.css">
 
 	<script src="browser-polyfill.js"></script>
 	<script src="libs/jquery.slim.js"></script>
-	<script src="libs/psl.js"></script>
 	<script src="common.js"></script>
 	<script src="popup.js"></script>
 </head>
@@ -78,8 +25,8 @@
 	</div>
 
 	<div id="options">
-		<input id="encode-httponly-checkbox" type="checkbox" />
-		<label for="encode-httponly-checkbox">Encode <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#Secure_and_HttpOnly_cookies"
+		<input id="prefix-httponly-checkbox" type="checkbox" />
+		<label for="prefix-httponly-checkbox">Prefix <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#Secure_and_HttpOnly_cookies"
 			 target="_blank">HttpOnly</a> cookies</label>
 
 		<div id="httponly-note">(may not be compatible with some software)</div>
