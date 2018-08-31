@@ -61,14 +61,14 @@ async function main() {
 	}
 }
 
-function saveCookiesToTextFile(cookieDescriptors, defaultFileName, encodeHttpOnly) {
+async function saveCookiesToTextFile(cookieDescriptors, defaultFileName, encodeHttpOnly) {
 	const formattedCookies = cookieDescriptors.map((c) => formatCookie(c, encodeHttpOnly))
 
 	const fileContent = `# Netscape HTTP Cookie File\n\n${formattedCookies.join('\n')}\n`
 	const blob = new Blob([fileContent], { type: 'text/plain;charset=utf-8' })
 	const objectURL = URL.createObjectURL(blob)
 
-	browser.downloads.download({
+	await browser.downloads.download({
 		url: objectURL,
 		filename: defaultFileName || 'cookies.txt',
 		saveAs: true,
