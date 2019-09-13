@@ -20,7 +20,7 @@ async function main() {
 			$('#save-for-current-hostname-button').html(currentTabHostname)
 
 			$('#save-for-current-hostname-button').on('click', async () => {
-				const cookies = await browser.cookies.getAll({ domain: currentTabHostname })
+				const cookies = await browser.cookies.getAll({ domain: currentTabHostname, firstPartyDomain: null })
 				await saveCookiesToTextFile(cookies, `cookies-${currentTabHostname.replace(/\./g, '-')}.txt`, shouldPrefixHttpOnly())
 			})
 
@@ -31,7 +31,7 @@ async function main() {
 				$('#save-for-current-domain-button').html(currentTabDomain)
 
 				$('#save-for-current-domain-button').on('click', async () => {
-					const cookies = await browser.cookies.getAll({ domain: currentTabDomain })
+					const cookies = await browser.cookies.getAll({ domain: currentTabDomain, firstPartyDomain: null })
 					await saveCookiesToTextFile(cookies, `cookies-${currentTabDomain.replace(/\./g, '-')}.txt`, shouldPrefixHttpOnly())
 				})
 			} else {
@@ -48,7 +48,7 @@ async function main() {
 
 
 	$('#save-for-all-domains-button').on('click', async () => {
-		const allCookies = await browser.cookies.getAll({})
+		const allCookies = await browser.cookies.getAll({ firstPartyDomain: null })
 		await saveCookiesToTextFile(allCookies, `cookies.txt`, shouldPrefixHttpOnly())
 	})
 
