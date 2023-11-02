@@ -20,7 +20,7 @@ async function main() {
 			$('#save-for-current-hostname-button').html(currentTabHostname)
 
 			$('#save-for-current-hostname-button').on('click', async () => {
-				const cookies = await browser.cookies.getAll({ domain: currentTabHostname, firstPartyDomain: null })
+				const cookies = await browser.cookies.getAll(getAllDetails({ domain: currentTabHostname }))
 				await saveCookiesToTextFile(cookies, `cookies-${currentTabHostname.replace(/\./g, '-')}.txt`, shouldPrefixHttpOnly())
 			})
 
@@ -31,7 +31,7 @@ async function main() {
 				$('#save-for-current-domain-button').html(currentTabDomain)
 
 				$('#save-for-current-domain-button').on('click', async () => {
-					const cookies = await browser.cookies.getAll({ domain: currentTabDomain, firstPartyDomain: null })
+					const cookies = await browser.cookies.getAll(getAllDetails({ domain: currentTabDomain }))
 					await saveCookiesToTextFile(cookies, `cookies-${currentTabDomain.replace(/\./g, '-')}.txt`, shouldPrefixHttpOnly())
 				})
 			} else {
@@ -48,7 +48,7 @@ async function main() {
 
 
 	$('#save-for-all-domains-button').on('click', async () => {
-		const allCookies = await browser.cookies.getAll({ firstPartyDomain: null })
+		const allCookies = await browser.cookies.getAll(getAllDetails())
 		await saveCookiesToTextFile(allCookies, `cookies.txt`, shouldPrefixHttpOnly())
 	})
 
@@ -65,6 +65,21 @@ async function saveCookiesToTextFile(cookieDescriptors, filename, prefixHttpOnly
 	const formattedCookies = cookieDescriptors.map((c) => formatCookie(c, prefixHttpOnly))
 	const fileContent = `# Netscape HTTP Cookie File\n\n${formattedCookies.join('\n')}\n`
 	await browser.runtime.sendMessage({ type: 'saveFile', data: { filename: filename, content: fileContent } })
+}
+
+function getAllDetails({ domain = null } = {}) {
+	const result = {}
+
+	if (domain !== null) {
+		result.domain = domain
+	}
+
+	if (Object.hasOwnProperty.call(window, 'chrome') === true) {
+		return result
+	}
+
+	result.firstPartyDomain = null
+	return result
 }
 
 function formatCookie(c, prefixHttpOnly) {
